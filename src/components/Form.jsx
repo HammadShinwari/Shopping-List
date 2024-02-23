@@ -1,0 +1,54 @@
+import React, { useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
+function Form({ input, setInput, todos, setTodos, editTodo, setEditTodo }) {
+    const updateTodo = (title, id, completed) => {
+        const newTodos = todos.map((todo) =>
+            todo.id === id ? { title, id, completed } : todo
+        );
+        setTodos(newTodos);
+        setEditTodo(null); 
+    };
+
+    useEffect(() => {
+        if (editTodo) {
+            setInput(editTodo.title);
+        } else {
+            setInput('');
+        }
+    }, [setInput, editTodo]);
+
+    const onInputChange = (event) => {
+        setInput(event.target.value);
+    };
+
+    const onFormSubmit = (event) => {
+        event.preventDefault();
+        if (!editTodo) {
+            setTodos([...todos, { id: uuidv4(), title: input, completed: false }]); 
+        } else {
+            updateTodo(input, editTodo.id, editTodo.completed);
+        }
+        setInput('');
+    };
+
+    return (
+        <>
+            <form onSubmit={onFormSubmit}>
+                <input
+                    type="text"
+                    placeholder="Enter a Todo..."
+                    className="task-input"
+                    value={input}
+                    required
+                    onChange={onInputChange}
+                />
+                <button type="submit" className="button-add">
+                    {editTodo ? 'OK' : 'Add'}
+                </button>
+            </form>
+        </>
+    );
+}
+
+export default Form;
